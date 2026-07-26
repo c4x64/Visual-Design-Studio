@@ -12,6 +12,7 @@ import { IOpenerService } from '../../../../platform/opener/common/opener.js';
 import { IHoverService } from '../../../../platform/hover/browser/hover.js';
 import { WinFormsControl, WinFormsForm, WinFormsControlType, WinFormsControlProperty } from '../common/winforms.js';
 import { createDefaultControl } from '../common/winforms.js';
+import { renderControl, generateStandaloneHtml } from './winformsRenderer.js';
 import * as DOM from '../../../../base/browser/dom.js';
 
 const WINFORMS_CONTROL_TYPES = [
@@ -80,6 +81,10 @@ export class WinFormsDesignerPane extends ViewPane {
 		const generateBtn = DOM.$('button.winforms-tb-btn', undefined, localize('generateCode', 'Generate C#'));
 		generateBtn.onclick = () => this.generateCode();
 		toolbar.appendChild(generateBtn);
+
+		const crossBtn = DOM.$('button.winforms-tb-btn', undefined, localize('crossCompile', 'Cross-Compile'));
+		crossBtn.onclick = () => this.crossCompileHtml();
+		toolbar.appendChild(crossBtn);
 
 		const mainArea = DOM.$('.winforms-main');
 		parent.appendChild(mainArea);
@@ -180,49 +185,8 @@ export class WinFormsDesignerPane extends ViewPane {
 		el.style.width = `${control.width}px`;
 		el.style.height = `${control.height}px`;
 
-		switch (control.type) {
-			case WinFormsControlType.Button:
-				el.innerHTML = `<button class="wf-btn">${control.properties.Text?.value ?? control.name}</button>`;
-				break;
-			case WinFormsControlType.Label:
-				el.innerHTML = `<span class="wf-label">${control.properties.Text?.value ?? control.name}</span>`;
-				break;
-			case WinFormsControlType.TextBox:
-				el.innerHTML = `<input class="wf-textbox" type="text" value="${control.properties.Text?.value ?? ''}" ${control.properties.ReadOnly?.value ? 'readonly' : ''} />`;
-				break;
-			case WinFormsControlType.ComboBox:
-				el.innerHTML = `<select class="wf-combobox"><option>${control.properties.Text?.value ?? ''}</option></select>`;
-				break;
-			case WinFormsControlType.ListBox:
-				el.innerHTML = `<ul class="wf-listbox"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>`;
-				break;
-			case WinFormsControlType.CheckBox:
-				el.innerHTML = `<label class="wf-checkbox"><input type="checkbox" ${control.properties.Checked?.value ? 'checked' : ''} />${control.properties.Text?.value ?? control.name}</label>`;
-				break;
-			case WinFormsControlType.RadioButton:
-				el.innerHTML = `<label class="wf-radiobutton"><input type="radio" name="rb" ${control.properties.Checked?.value ? 'checked' : ''} />${control.properties.Text?.value ?? control.name}</label>`;
-				break;
-			case WinFormsControlType.Panel:
-				el.innerHTML = `<div class="wf-panel"><span class="wf-panel-label">${control.properties.Text?.value ?? control.name}</span></div>`;
-				break;
-			case WinFormsControlType.GroupBox:
-				el.innerHTML = `<fieldset class="wf-groupbox"><legend>${control.properties.Text?.value ?? control.name}</legend></fieldset>`;
-				break;
-			case WinFormsControlType.PictureBox:
-				el.innerHTML = `<div class="wf-picturebox"><span>🖼</span></div>`;
-				break;
-			case WinFormsControlType.ProgressBar:
-				el.innerHTML = `<div class="wf-progressbar"><div class="wf-progressbar-fill" style="width:${control.properties.Value?.value ?? 50}%"></div></div>`;
-				break;
-			case WinFormsControlType.TrackBar:
-				el.innerHTML = `<div class="wf-trackbar"><input type="range" min="${control.properties.Minimum?.value ?? 0}" max="${control.properties.Maximum?.value ?? 10}" value="${control.properties.Value?.value ?? 5}" /></div>`;
-				break;
-			case WinFormsControlType.TreeView:
-				el.innerHTML = `<div class="wf-treeview"><ul><li>Node 1<ul><li>Subnode 1.1</li></ul></li><li>Node 2</li></ul></div>`;
-				break;
-			default:
-				el.innerHTML = `<span>${control.type}</span>`;
-		}
+		const inner = renderControl(control, this._form);
+		if (inner) el.appendChild(inner);
 
 		el.onclick = (e: MouseEvent) => {
 			e.stopPropagation();
@@ -446,6 +410,17 @@ export class WinFormsDesignerPane extends ViewPane {
 		this._selectedControl = null;
 		this.renderForm();
 		this.updatePropertyGrid();
+	}
+
+	private crossCompileHtml(): void {
+		const html = generateStandaloneHtml(this._form);
+		const blob = new Blob([html], { type: 'text/html' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `${this._form.name}.html`;
+		a.click();
+		URL.revokeObjectURL(url);
 	}
 
 	private generateCode(): void {
