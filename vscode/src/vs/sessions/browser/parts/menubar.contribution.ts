@@ -1,6 +1,5 @@
 import { localize } from '../../../nls.js';
 import { MenuId, MenuRegistry } from '../../../platform/actions/common/actions.js';
-import { Menus } from '../menus.js';
 
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 	submenu: MenuId.MenubarFileMenu,
@@ -39,13 +38,13 @@ MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: Menus.ToolsMenu,
+	submenu: MenuId.MenubarToolsMenu,
 	title: { value: 'Tools', original: 'Tools', mnemonicTitle: localize({ key: 'mTools', comment: ['&& denotes a mnemonic'] }, '&&Tools') },
 	order: 7
 });
 
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: Menus.WindowMenu,
+	submenu: MenuId.MenubarWindowMenu,
 	title: { value: 'Window', original: 'Window', mnemonicTitle: localize({ key: 'mWindow', comment: ['&& denotes a mnemonic'] }, '&&Window') },
 	order: 8
 });

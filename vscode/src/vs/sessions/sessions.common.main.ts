@@ -447,6 +447,10 @@ import '../workbench/contrib/editTelemetry/browser/editTelemetry.contribution.js
 // Opener
 import '../workbench/contrib/opener/browser/opener.contribution.js';
 
+// WinForms Designer Contribution
+import '../workbench/contrib/winforms/browser/winforms.contribution.js';
+import '../workbench/contrib/winforms/browser/winformsExtAPI.js';
+
 //#endregion
 
 //#region --- sessions contributions

@@ -113,11 +113,15 @@ export class WinFormsDesignerPane extends ViewPane {
 			const item = DOM.$('.winforms-toolbox-item');
 			item.draggable = true;
 			item.textContent = `${ct.icon} ${ct.label}`;
-			item.dataset['controlType'] = ct.type;
+			item.dataset.controlType = ct.type;
 
 			item.ondragstart = (e: DragEvent) => {
 				this._dragControlType = ct.type;
 				e.dataTransfer?.setData('text/plain', ct.type);
+			};
+
+			item.ondragend = () => {
+				this._dragControlType = null;
 			};
 
 			item.onclick = () => {
@@ -308,12 +312,22 @@ export class WinFormsDesignerPane extends ViewPane {
 			return;
 		}
 
+		const nameLabel = DOM.$('span.wp-label');
+		nameLabel.textContent = 'Name';
+		const nameValue = DOM.$('span.wp-value');
+		nameValue.textContent = selected.name;
 		const nameRow = DOM.$('.winforms-property-row');
-		nameRow.innerHTML = `<span class="wp-label">Name</span><span class="wp-value">${selected.name}</span>`;
+		nameRow.appendChild(nameLabel);
+		nameRow.appendChild(nameValue);
 		this._propertyGridEl.appendChild(nameRow);
 
+		const typeLabel = DOM.$('span.wp-label');
+		typeLabel.textContent = 'Type';
+		const typeValue = DOM.$('span.wp-value');
+		typeValue.textContent = selected.type;
 		const typeRow = DOM.$('.winforms-property-row');
-		typeRow.innerHTML = `<span class="wp-label">Type</span><span class="wp-value">${selected.type}</span>`;
+		typeRow.appendChild(typeLabel);
+		typeRow.appendChild(typeValue);
 		this._propertyGridEl.appendChild(typeRow);
 
 		const categories = new Map<string, WinFormsControlProperty[]>();

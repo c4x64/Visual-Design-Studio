@@ -364,10 +364,23 @@ export function updateControl(el: HTMLElement, control: WinFormsControl, form: W
 }
 
 export function generateStandaloneHtml(form: WinFormsForm): string {
-	const controlsHtml: string[] = [];
-	for (const c of form.controls) {
-		controlsHtml.push(`    { type: '${c.type}', id: '${c.id}', name: '${c.name}', x: ${c.x}, y: ${c.y}, width: ${c.width}, height: ${c.height}, text: '${(c.properties.Text?.value as string ?? c.name).replace(/'/g, "\\'")}', enabled: ${c.properties.Enabled?.value ?? true}, visible: ${c.properties.Visible?.value ?? true} }`);
-	}
+	const controlsJson = JSON.stringify(form.controls.map(c => ({
+		type: c.type,
+		id: c.id,
+		name: c.name,
+		x: c.x, y: c.y,
+		width: c.width, height: c.height,
+		text: c.properties.Text?.value ?? c.name,
+		enabled: c.properties.Enabled?.value ?? true,
+		visible: c.properties.Visible?.value ?? true,
+		checked: c.properties.Checked?.value ?? false,
+		readOnly: c.properties.ReadOnly?.value ?? false,
+		textAlign: c.properties.TextAlign?.value ?? 'TopLeft',
+		value: c.properties.Value?.value ?? 50,
+		min: c.properties.Minimum?.value ?? 0,
+		max: c.properties.Maximum?.value ?? 10,
+		progressValue: c.properties.Value?.value ?? 50
+	})));
 
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -429,30 +442,39 @@ ${form.controls.map(c => `    <div class="wf-control" style="left:${c.x}px;top:$
 </div>
 <script>
 (function() {
-  const controls = [${controlsHtml.join(',\n')}];
+  const controls = ${controlsJson};
+
+  const alignToCss = function(a) {
+    switch (a) {
+      case 'TopLeft': case 'MiddleLeft': case 'BottomLeft': return 'left';
+      case 'TopCenter': case 'MiddleCenter': case 'BottomCenter': return 'center';
+      case 'TopRight': case 'MiddleRight': case 'BottomRight': return 'right';
+      default: return 'left';
+    }
+  };
 
   const controlRenderers = {
     Button: (c) => { const b = document.createElement('button'); b.className = 'wf-btn'; b.textContent = c.text; b.disabled = !c.enabled; return b; },
-    Label: (c) => { const l = document.createElement('span'); l.className = 'wf-label'; l.textContent = c.text; return l; },
-    TextBox: (c) => { const i = document.createElement('input'); i.className = 'wf-textbox'; i.type = 'text'; i.value = c.text; i.readOnly = !c.editable; i.disabled = !c.enabled; return i; },
-    CheckBox: (c) => { const l = document.createElement('label'); l.className = 'wf-checkbox'; const cb = document.createElement('input'); cb.type = 'checkbox'; l.appendChild(cb); l.appendChild(document.createTextNode(c.text)); return l; },
-    RadioButton: (c) => { const l = document.createElement('label'); l.className = 'wf-radiobutton'; const rb = document.createElement('input'); rb.type = 'radio'; l.appendChild(rb); l.appendChild(document.createTextNode(c.text)); return l; },
-    ComboBox: (c) => { const ct = document.createElement('div'); ct.className = 'wf-combobox-container'; const inp = document.createElement('input'); inp.className = 'wf-combobox-input'; inp.value = c.text; ct.appendChild(inp); const a = document.createElement('button'); a.className = 'wf-combobox-arrow'; a.textContent = '\u25be'; ct.appendChild(a); return ct; },
+    Label: (c) => { const l = document.createElement('span'); l.className = 'wf-label'; l.textContent = c.text; l.style.textAlign = alignToCss(c.textAlign); return l; },
+    TextBox: (c) => { const i = document.createElement('input'); i.className = 'wf-textbox'; i.type = 'text'; i.value = c.text; i.readOnly = c.readOnly; i.disabled = !c.enabled; return i; },
+    CheckBox: (c) => { const l = document.createElement('label'); l.className = 'wf-checkbox'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = c.checked; l.appendChild(cb); l.appendChild(document.createTextNode(c.text)); return l; },
+    RadioButton: (c) => { const l = document.createElement('label'); l.className = 'wf-radiobutton'; const rb = document.createElement('input'); rb.type = 'radio'; rb.checked = c.checked; l.appendChild(rb); l.appendChild(document.createTextNode(c.text)); return l; },
+    ComboBox: (c) => { const ct = document.createElement('div'); ct.className = 'wf-combobox-container'; const inp = document.createElement('input'); inp.className = 'wf-combobox-input'; inp.value = c.text; inp.disabled = !c.enabled; ct.appendChild(inp); const a = document.createElement('button'); a.className = 'wf-combobox-arrow'; a.textContent = '\u25be'; ct.appendChild(a); return ct; },
     ListBox: (c) => { const ul = document.createElement('ul'); ul.className = 'wf-listbox'; for (let i = 1; i <= 3; i++) { const li = document.createElement('li'); li.textContent = 'Item ' + i; ul.appendChild(li); } return ul; },
     Panel: (c) => { const d = document.createElement('div'); d.className = 'wf-panel'; const l = document.createElement('span'); l.className = 'wf-panel-label'; l.textContent = c.name; d.appendChild(l); return d; },
     GroupBox: (c) => { const fs = document.createElement('fieldset'); fs.className = 'wf-groupbox'; const lg = document.createElement('legend'); lg.textContent = c.text; fs.appendChild(lg); return fs; },
     PictureBox: (c) => { const d = document.createElement('div'); d.className = 'wf-picturebox'; d.textContent = '\ud83d\uddbc'; return d; },
-    ProgressBar: (c) => { const d = document.createElement('div'); d.className = 'wf-progressbar'; const f = document.createElement('div'); f.className = 'wf-progressbar-fill'; f.style.width = '50%'; d.appendChild(f); return d; },
-    TrackBar: (c) => { const d = document.createElement('div'); d.className = 'wf-trackbar'; const i = document.createElement('input'); i.type = 'range'; d.appendChild(i); return d; },
-    TreeView: (c) => { const d = document.createElement('div'); d.className = 'wf-treeview'; const ul = document.createElement('ul'); ul.innerHTML = '<li>Node 1<ul><li>Subnode 1.1</li></ul></li><li>Node 2</li>'; d.appendChild(ul); return d; },
-    ListView: (c) => { const d = document.createElement('div'); d.className = 'wf-listview'; d.innerHTML = '<table><thead><tr><th>Column 1</th><th>Column 2</th><th>Column 3</th></tr></thead><tbody><tr><td>Item 1.1</td><td>Item 1.2</td><td>Item 1.3</td></tr><tr><td>Item 2.1</td><td>Item 2.2</td><td>Item 2.3</td></tr></tbody></table>'; return d; },
-    DateTimePicker: (c) => { const i = document.createElement('input'); i.className = 'wf-datetimepicker'; i.type = 'date'; return i; },
-    MonthCalendar: (c) => { const d = document.createElement('div'); d.className = 'wf-monthcalendar'; const i = document.createElement('input'); i.type = 'month'; d.appendChild(i); return d; },
-    RichTextBox: (c) => { const t = document.createElement('textarea'); t.className = 'wf-richtextbox'; t.value = c.text; return t; }
+    ProgressBar: (c) => { const d = document.createElement('div'); d.className = 'wf-progressbar'; const f = document.createElement('div'); f.className = 'wf-progressbar-fill'; f.style.width = Math.min(100, Math.max(0, c.progressValue)) + '%'; d.appendChild(f); return d; },
+    TrackBar: (c) => { const d = document.createElement('div'); d.className = 'wf-trackbar'; const i = document.createElement('input'); i.type = 'range'; i.min = c.min; i.max = c.max; i.value = c.value; i.disabled = !c.enabled; d.appendChild(i); return d; },
+    TreeView: (c) => { const d = document.createElement('div'); d.className = 'wf-treeview'; const ul = document.createElement('ul'); const nodes = [{ text: 'Node 1', children: [{ text: 'Subnode 1.1' }] }, { text: 'Node 2' }]; function buildTree(parent, items) { items.forEach(function(item) { var li = document.createElement('li'); li.textContent = item.text; if (item.children) { var sub = document.createElement('ul'); buildTree(sub, item.children); li.appendChild(sub); } parent.appendChild(li); }); } buildTree(ul, nodes); d.appendChild(ul); return d; },
+    ListView: (c) => { const d = document.createElement('div'); d.className = 'wf-listview'; var t = document.createElement('table'); t.style.width = '100%'; var thead = document.createElement('thead'); var hr = document.createElement('tr'); ['Column 1', 'Column 2', 'Column 3'].forEach(function(h) { var th = document.createElement('th'); th.textContent = h; hr.appendChild(th); }); thead.appendChild(hr); t.appendChild(thead); var tbody = document.createElement('tbody'); for (var r = 1; r <= 3; r++) { var tr = document.createElement('tr'); for (var c2 = 1; c2 <= 3; c2++) { var td = document.createElement('td'); td.textContent = 'Item ' + r + '.' + c2; tr.appendChild(td); } tbody.appendChild(tr); } t.appendChild(tbody); d.appendChild(t); return d; },
+    DateTimePicker: (c) => { const i = document.createElement('input'); i.className = 'wf-datetimepicker'; i.type = 'date'; i.value = c.text || new Date().toISOString().slice(0, 10); i.disabled = !c.enabled; return i; },
+    MonthCalendar: (c) => { const d = document.createElement('div'); d.className = 'wf-monthcalendar'; const i = document.createElement('input'); i.type = 'month'; i.value = new Date().toISOString().slice(0, 7); d.appendChild(i); return d; },
+    RichTextBox: (c) => { const t = document.createElement('textarea'); t.className = 'wf-richtextbox'; t.value = c.text; t.readOnly = c.readOnly; t.disabled = !c.enabled; return t; }
   };
 
-  controls.forEach(c => {
-    const el = document.querySelector('[data-id="' + c.id + '"]');
+  controls.forEach(function(c) {
+    const el = document.querySelector('[data-id="' + c.id.replace(/"/g, '\\"') + '"]');
     if (!el) return;
     const renderer = controlRenderers[c.type];
     if (renderer) {
