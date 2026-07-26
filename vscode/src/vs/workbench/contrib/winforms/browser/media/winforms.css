@@ -1,0 +1,410 @@
+.winforms-designer-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	background-color: var(--vscode-editor-background);
+	color: var(--vscode-editor-foreground);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+	font-size: 12px;
+}
+
+.winforms-toolbar {
+	display: flex;
+	gap: 4px;
+	padding: 4px 8px;
+	background: var(--vscode-titleBar-activeBackground);
+	border-bottom: 1px solid var(--vscode-titleBar-border);
+	flex-shrink: 0;
+}
+
+.winforms-tb-btn {
+	background: transparent;
+	border: 1px solid transparent;
+	color: var(--vscode-titleBar-activeForeground);
+	padding: 2px 8px;
+	cursor: pointer;
+	font-size: 12px;
+	border-radius: 3px;
+}
+
+.winforms-tb-btn:hover {
+	background: rgba(255,255,255,0.1);
+	border-color: rgba(255,255,255,0.2);
+}
+
+.winforms-main {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+}
+
+.winforms-toolbox {
+	width: 200px;
+	min-width: 150px;
+	background: var(--vscode-sideBar-background);
+	border-right: 1px solid var(--vscode-sideBar-border);
+	overflow-y: auto;
+	flex-shrink: 0;
+}
+
+.winforms-panel-header {
+	padding: 6px 8px;
+	font-weight: 600;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--vscode-sideBarSectionHeader-foreground);
+	background: var(--vscode-sideBarSectionHeader-background);
+	border-bottom: 1px solid var(--vscode-sideBar-border);
+}
+
+.winforms-toolbox-item {
+	padding: 6px 8px;
+	cursor: grab;
+	font-size: 12px;
+	border-bottom: 1px solid transparent;
+	user-select: none;
+}
+
+.winforms-toolbox-item:hover {
+	background: var(--vscode-list-hoverBackground);
+}
+
+.winforms-center {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.winforms-design-surface {
+	flex: 1;
+	overflow: auto;
+	padding: 16px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	background: #1e1e1e;
+	background-image:
+		linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+	background-size: 20px 20px;
+}
+
+.winforms-form-surface {
+	background: #f0f0f0;
+	border-radius: 4px;
+	box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+	position: relative;
+	min-height: 200px;
+	min-width: 200px;
+}
+
+.winforms-empty-message {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #999;
+	font-size: 14px;
+	text-align: center;
+	pointer-events: none;
+}
+
+.winforms-control {
+	position: absolute;
+	cursor: move;
+	user-select: none;
+	border: 1px solid transparent;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.winforms-control.selected {
+	border-color: #569CD6;
+	outline: 1px solid #569CD6;
+	z-index: 100;
+}
+
+.winforms-control.selected::after {
+	content: '';
+	position: absolute;
+	right: -4px;
+	bottom: -4px;
+	width: 8px;
+	height: 8px;
+	background: #569CD6;
+	border: 1px solid white;
+	cursor: nwse-resize;
+	z-index: 101;
+}
+
+.wf-resize-handle {
+	position: absolute;
+	right: -4px;
+	bottom: -4px;
+	width: 8px;
+	height: 8px;
+	background: #569CD6;
+	border: 1px solid white;
+	cursor: nwse-resize;
+	z-index: 102;
+	display: none;
+}
+
+.winforms-control.selected .wf-resize-handle {
+	display: block;
+}
+
+.wf-btn {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+	color: #000;
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	cursor: pointer;
+	padding: 0 4px;
+	text-align: center;
+}
+
+.wf-btn:active {
+	background: linear-gradient(to bottom, #d0d0d0, #c0c0c0);
+}
+
+.wf-label {
+	font-family: 'Segoe UI', sans-serif;
+	font-size: 9pt;
+	color: #000;
+	padding: 2px 4px;
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wf-textbox {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: white;
+	color: #000;
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	padding: 1px 2px;
+	box-sizing: border-box;
+}
+
+.wf-combobox {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: white;
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	padding: 1px 2px;
+}
+
+.wf-listbox {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: white;
+	list-style: none;
+	margin: 0;
+	padding: 2px;
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	overflow: auto;
+}
+
+.wf-listbox li {
+	padding: 1px 4px;
+}
+
+.wf-listbox li:hover {
+	background: #e8f0fe;
+}
+
+.wf-checkbox, .wf-radiobutton {
+	font-family: 'Segoe UI', sans-serif;
+	font-size: 9pt;
+	color: #000;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 4px;
+	cursor: default;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wf-checkbox input, .wf-radiobutton input {
+	margin: 0;
+}
+
+.wf-panel {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: #f0f0f0;
+	overflow: hidden;
+}
+
+.wf-panel-label {
+	display: block;
+	padding: 4px;
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	color: #000;
+}
+
+.wf-groupbox {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: #f0f0f0;
+	padding: 8px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.wf-groupbox legend {
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	color: #000;
+	padding: 0 4px;
+}
+
+.wf-picturebox {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+}
+
+.wf-progressbar {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: white;
+	overflow: hidden;
+}
+
+.wf-progressbar-fill {
+	height: 100%;
+	background: linear-gradient(to bottom, #4ec34e, #3a9e3a);
+	transition: width 0.2s;
+}
+
+.wf-trackbar {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	padding: 0 4px;
+	box-sizing: border-box;
+}
+
+.wf-trackbar input {
+	width: 100%;
+}
+
+.wf-treeview {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #8a8a8a;
+	background: white;
+	overflow: auto;
+	font-size: 9pt;
+	font-family: 'Segoe UI', sans-serif;
+	padding: 2px;
+}
+
+.wf-treeview ul {
+	list-style: none;
+	margin: 0;
+	padding-left: 16px;
+}
+
+.wf-treeview li {
+	padding: 1px 4px;
+}
+
+.winforms-property-grid {
+	flex: 1;
+	min-height: 100px;
+	background: var(--vscode-sideBar-background);
+	border-top: 1px solid var(--vscode-sideBar-border);
+	overflow-y: auto;
+}
+
+.winforms-property-empty {
+	padding: 16px;
+	color: var(--vscode-descriptionForeground);
+	font-style: italic;
+	font-size: 12px;
+	text-align: center;
+}
+
+.winforms-property-category {
+	padding: 4px 8px;
+	font-weight: 600;
+	font-size: 11px;
+	color: var(--vscode-sideBarSectionHeader-foreground);
+	background: var(--vscode-sideBarSectionHeader-background);
+	border-bottom: 1px solid var(--vscode-sideBar-border);
+	margin-top: 4px;
+}
+
+.winforms-property-row {
+	display: flex;
+	padding: 2px 8px;
+	border-bottom: 1px solid var(--vscode-sideBar-border);
+	min-height: 22px;
+	align-items: center;
+}
+
+.winforms-property-row .wp-label {
+	flex: 0 0 100px;
+	font-size: 12px;
+	color: var(--vscode-editor-foreground);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.winforms-property-row .wp-value {
+	flex: 1;
+	font-size: 12px;
+	color: var(--vscode-editor-foreground);
+	display: flex;
+	align-items: center;
+}
+
+.winforms-property-row .wp-value input[type="number"],
+.winforms-property-row .wp-value input[type="text"],
+.winforms-property-row .wp-value select {
+	background: var(--vscode-input-background);
+	color: var(--vscode-input-foreground);
+	border: 1px solid var(--vscode-input-border);
+	padding: 1px 4px;
+	font-size: 12px;
+	border-radius: 2px;
+	box-sizing: border-box;
+}
+
+.winforms-property-row .wp-value input[type="color"] {
+	width: 24px;
+	height: 20px;
+	padding: 0;
+	border: 1px solid var(--vscode-input-border);
+	cursor: pointer;
+}

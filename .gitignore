@@ -1,0 +1,13 @@
+node_modules/
+.vscode-test/
+out/
+out-build/
+out-vscode-web/
+out-vscode-reh-web/
+out-vscode-reh/
+.cache/
+yarn.lock
+.DS_Store
+*.tsbuildinfo
+dist/
+build/node_modules/
